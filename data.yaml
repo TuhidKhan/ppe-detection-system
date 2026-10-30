@@ -1,0 +1,12 @@
+# YOLOv8 PPE Detection Dataset Configuration
+# Standard cross-platform format
+
+path: ./dataset
+train: images/train
+val: images/val
+
+# Class Names
+names:
+  0: helmet
+  1: head
+  2: person

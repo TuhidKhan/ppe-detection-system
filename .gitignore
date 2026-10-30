@@ -1,0 +1,24 @@
+# Large datasets (do not commit gigabytes of images to git)
+dataset/
+DataSet/
+
+# Temporary base checkpoint in root
+yolov8n.pt
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# YOLO training runs & cache
+runs/
+*.cache
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

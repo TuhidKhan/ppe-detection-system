@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeSite AI - Automated PPE Compliance & Safety Detection</title>
+    <meta name="description" content="Enterprise-grade computer vision system for automated PPE and safety helmet compliance monitoring.">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="brand-details">
+                    <h1 class="brand-title">SafeSite AI</h1>
+                    <span class="brand-subtitle">PPE Compliance & Hazard Detection</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="api-status-badge" id="apiStatusBadge">
+                    <span class="status-indicator" id="statusDot"></span>
+                    <span class="status-text" id="statusText">Checking Backend...</span>
+                </div>
+                <a href="https://github.com/TuhidKhan/ppe-detection-system" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" title="View Source on GitHub">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                    </svg>
+                    <span>GitHub</span>
+                </a>
+                <button class="btn btn-secondary btn-sm" id="btnSettings" title="Configure Backend Endpoint">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <span>API Settings</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-container">
+        <!-- Settings Bar (Expandable) -->
+        <section class="settings-drawer hidden" id="settingsDrawer">
+            <div class="settings-content">
+                <div class="form-group">
+                    <label for="apiUrlInput">Backend API Base URL (Railway / Localhost)</label>
+                    <div class="input-with-button">
+                        <input type="url" id="apiUrlInput" class="form-control" placeholder="http://localhost:8000 or https://your-app.up.railway.app" value="http://localhost:8000">
+                        <button class="btn btn-primary" id="btnSaveApiUrl">Save & Test</button>
+                    </div>
+                    <span class="form-hint">Points your frontend to your Railway deployed backend API.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration & Controls Section -->
+        <section class="controls-card">
+            <div class="controls-grid">
+                <!-- Drop Zone -->
+                <div class="upload-area" id="dropZone">
+                    <input type="file" id="fileInput" accept="image/*" class="file-input">
+                    <div class="upload-prompt" id="uploadPrompt">
+                        <div class="upload-icon">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <h3 class="upload-title">Upload Site Inspection Image</h3>
+                        <p class="upload-desc">Drag and drop imagery here, or <span class="text-link">browse files</span></p>
+                        <span class="upload-meta">Supports PNG, JPG, JPEG, WEBP (Max 15MB)</span>
+                    </div>
+
+                    <!-- Selected File State -->
+                    <div class="selected-file-info hidden" id="selectedFileInfo">
+                        <div class="file-meta">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                                <circle cx="9" cy="9" r="2"/>
+                                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                            </svg>
+                            <span class="file-name" id="selectedFileName">worker_sample.jpg</span>
+                            <span class="file-size" id="selectedFileSize">(2.4 MB)</span>
+                        </div>
+                        <button type="button" class="btn btn-ghost btn-sm" id="btnChangeFile">Change</button>
+                    </div>
+                </div>
+
+                <!-- Detection Parameters Sidebar -->
+                <div class="parameters-panel">
+                    <h2 class="panel-title">Inspection Parameters</h2>
+
+                    <div class="parameter-group">
+                        <div class="parameter-header">
+                            <label for="confSlider">Confidence Threshold</label>
+                            <span class="parameter-value" id="confValue">25%</span>
+                        </div>
+                        <input type="range" id="confSlider" min="5" max="95" value="25" step="5" class="range-slider">
+                        <p class="parameter-hint">Higher values reduce false alarms; lower values maximize detection sensitivity.</p>
+                    </div>
+
+                    <div class="parameter-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="chkBanner" checked>
+                            <span>Overlay safety status banner on output image</span>
+                        </label>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary btn-block" id="btnAnalyze" disabled>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <span>Run Safety Inspection</span>
+                        </button>
+                        <button class="btn btn-secondary btn-block" id="btnReset" disabled>Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State Indicator -->
+        <section class="loading-state hidden" id="loadingState">
+            <div class="spinner"></div>
+            <h3 class="loading-title">Processing Neural Detection</h3>
+            <p class="loading-desc">Scanning worker imagery, classifying PPE equipment, and auditing safety compliance...</p>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section hidden" id="resultsSection">
+            <!-- Compliance Status Banner -->
+            <div class="compliance-card" id="complianceCard">
+                <div class="compliance-badge-icon" id="complianceIcon">
+                    <!-- Dynamic SVG inserted by JS -->
+                </div>
+                <div class="compliance-content">
+                    <div class="compliance-header">
+                        <span class="compliance-tag" id="complianceStatusTag">COMPLIANT</span>
+                        <span class="compliance-timestamp" id="inspectionTime">Inspection Completed</span>
+                    </div>
+                    <p class="compliance-message" id="complianceMessage">All evaluated personnel are equipped with mandatory safety headgear.</p>
+                </div>
+            </div>
+
+            <!-- Quantitative Metrics Row -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-label">Compliance Rate</span>
+                    <span class="metric-value" id="metricComplianceRate">100%</span>
+                    <span class="metric-subtext">Personnel Protection Level</span>
+                </div>
+                <div class="metric-card metric-safe">
+                    <span class="metric-label">Certified Helmets</span>
+                    <span class="metric-value" id="metricHelmets">0</span>
+                    <span class="metric-subtext">Approved Protective Units</span>
+                </div>
+                <div class="metric-card metric-danger">
+                    <span class="metric-label">Safety Violations</span>
+                    <span class="metric-value" id="metricViolations">0</span>
+                    <span class="metric-subtext">Unprotected Personnel</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Total Evaluated</span>
+                    <span class="metric-value" id="metricTotalEvaluated">0</span>
+                    <span class="metric-subtext">Visible Personnel Units</span>
+                </div>
+            </div>
+
+            <!-- Imagery Display Grid -->
+            <div class="imagery-grid">
+                <!-- Original Image -->
+                <div class="image-viewer-card">
+                    <div class="viewer-header">
+                        <span class="viewer-title">Input Imagery</span>
+                        <span class="viewer-badge">Source</span>
+                    </div>
+                    <div class="image-container">
+                        <img id="imgOriginal" alt="Original Site Image" class="rendered-image">
+                    </div>
+                </div>
+
+                <!-- Annotated Output Image -->
+                <div class="image-viewer-card">
+                    <div class="viewer-header">
+                        <span class="viewer-title">Inspection Analysis Output</span>
+                        <div class="viewer-actions">
+                            <a id="btnDownload" download="ppe_inspection_output.jpg" class="btn btn-secondary btn-xs">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                <span>Export Image</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="image-container">
+                        <img id="imgAnnotated" alt="Annotated Detection Output" class="rendered-image">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Detection Audit Log Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 class="table-title">Object Detection Audit Log</h3>
+                    <span class="table-count" id="detectionCountLabel">0 detections logged</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="detectionsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item Class</th>
+                                <th>Classification Status</th>
+                                <th>Confidence Score</th>
+                                <th>Bounding Coordinates [X1, Y1, X2, Y2]</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detectionsTableBody">
+                            <!-- Populated dynamically by script.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-brand-section">
+                <p class="footer-title">SafeSite AI - PPE Compliance Monitoring Platform</p>
+                <p class="footer-developer">
+                    Developed by <span class="developer-name">Tuhid Khan</span>
+                </p>
+            </div>
+            
+            <div class="footer-social-links">
+                <a href="https://github.com/TuhidKhan" target="_blank" rel="noopener noreferrer" class="footer-link-item" title="Tuhid Khan on GitHub">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                    </svg>
+                    <span>GitHub</span>
+                </a>
+                <span class="footer-separator">&bull;</span>
+                <a href="https://www.linkedin.com/in/tuhid-khan/" target="_blank" rel="noopener noreferrer" class="footer-link-item" title="Tuhid Khan on LinkedIn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                        <rect width="4" height="12" x="2" y="9"/>
+                        <circle cx="4" cy="4" r="2"/>
+                    </svg>
+                    <span>LinkedIn</span>
+                </a>
+                <span class="footer-separator">&bull;</span>
+                <a href="https://github.com/TuhidKhan/ppe-detection-system" target="_blank" rel="noopener noreferrer" class="footer-link-item" title="Project Repository">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"/>
+                        <polyline points="8 6 2 12 8 18"/>
+                    </svg>
+                    <span>Repository</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
