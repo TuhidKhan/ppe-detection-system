@@ -72,11 +72,14 @@ def root_info() -> Dict[str, Any]:
     """
     Root endpoint providing system health, model status, and API instructions.
     """
+    classes = list(model.names.values()) if model else []
     return {
         "project": "PPE Detection for Workplace Safety",
         "status": "Online",
         "model_loaded": model is not None,
         "model_file": str(MODEL_PATH) if MODEL_PATH.exists() else FALLBACK_MODEL,
+        "model_classes": classes,
+        "is_fine_tuned": "helmet" in classes,
         "docs_url": "/docs",
         "detect_endpoint": "/detect (POST multipart/form-data with 'file')"
     }
@@ -90,7 +93,13 @@ def health_check() -> Dict[str, Any]:
     """
     if model is None:
         raise HTTPException(status_code=503, detail="AI Model is not loaded.")
-    return {"status": "healthy", "service": "ppe-detection-backend"}
+    classes = list(model.names.values())
+    return {
+        "status": "healthy",
+        "service": "ppe-detection-backend",
+        "classes": classes,
+        "is_fine_tuned": "helmet" in classes
+    }
 
 
 @app.post("/detect")
