@@ -9,7 +9,7 @@
 // 1. Application State & Elements
 const state = {
     selectedFile: null,
-    apiBaseUrl: localStorage.getItem("safesite_api_url") || "http://localhost:8000",
+    apiBaseUrl: localStorage.getItem("safesite_api_url") || "https://ppe-detection-system-production-6e0f.up.railway.app",
     isAnalyzing: false,
 };
 
